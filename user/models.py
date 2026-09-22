@@ -18,20 +18,21 @@ class CustomUserManager(BaseUserManager):
 
     def create_superuser(self,email,username,password,**extra_fields):
         extra_fields.setdefault('is_staff',True)
+        extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault('is_active',True)
         return self.create_user(email,username,password,**extra_fields)
 
 class CustomUser(AbstractBaseUser,PermissionsMixin):
     email = models.EmailField(max_length=255, unique= True , verbose_name='Email')
     username = models.CharField(max_length = 100)
-    First_name = models.CharField(max_length = 100)
-    Last_name = models.CharField(max_length = 100)
+    first_name = models.CharField(max_length = 100)
+    last_name = models.CharField(max_length = 100)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
     objects = CustomUserManager()
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["First_name", "Last_name","username"]
+    REQUIRED_FIELDS = ["first_name", "last_name","username"]
 
 
 class OTPVerification(models.Model):

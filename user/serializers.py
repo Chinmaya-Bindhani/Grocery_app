@@ -1,13 +1,29 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
 User = get_user_model()
+
+
+
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        token["is_staff"] = user.is_staff
+        token["is_superuser"] = user.is_superuser
+
+        return token
 
 class RegisterSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=255)
     username = serializers.CharField(max_length=100)
-    First_name= serializers.CharField(max_length=100)
-    Last_name = serializers.CharField(max_length=100)
+    first_name= serializers.CharField(max_length=100)
+    last_name = serializers.CharField(max_length=100)
     password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
 
@@ -25,8 +41,8 @@ class RegisterSerializer(serializers.Serializer):
         user = User.objects.create(
             email = validated_data['email'],
             username = validated_data['username'],
-            First_name = validated_data['First_name'],
-            Last_name = validated_data['Last_name'],
+            first_name = validated_data['first_name'],
+            last_name = validated_data['last_name'],
             password = validated_data['password']
         )
         return user

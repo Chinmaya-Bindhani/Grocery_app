@@ -6,7 +6,7 @@ import os
 from django.conf.global_settings import AUTH_USER_MODEL
 from dotenv import load_dotenv
 load_dotenv()
-
+from datetime import  timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'User_Profile',
 ]
 
 MIDDLEWARE = [
@@ -86,7 +87,8 @@ DATABASES = {
 AUTH_USER_MODEL='user.CustomUser'
 
 CORS_ALLOWED_ORIGINS = [
-  "http://localhost:5173"
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
 ]
 
 # Password validation
@@ -136,7 +138,12 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
 
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    "DEFAULT_THROTTLE_RATES": {
+        "profile": "30/minute",
+        "payment": "20/minute",
+        "orders": "60/minute",
+    },
 }
 
 
@@ -148,5 +155,10 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=2),  # dev-friendly, tighten before production
+
+}
 
 

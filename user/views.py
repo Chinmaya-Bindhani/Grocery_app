@@ -13,8 +13,12 @@ from . serializers import (
     SendOTPSerializer,
     VerifyOTPSerializer,
     ChangePasswordSerializer,
+    CustomTokenObtainPairSerializer
 )
+from rest_framework_simplejwt.views import TokenObtainPairView
 
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 # pyrefly: ignore [missing-import]
 from .models import OTPVerification
@@ -42,6 +46,11 @@ class LoginView(generics.GenericAPIView):
             return Response({"error": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
 
         refresh = RefreshToken.for_user(user)
+
+        # Add staff permissions to the JWT claims.
+        refresh["is_staff"] = user.is_staff
+        refresh["is_superuser"] = user.is_superuser
+
         return Response({
             "message": "Login successful",
             "tokens": {
