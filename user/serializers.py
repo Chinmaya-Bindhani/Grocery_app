@@ -52,6 +52,22 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
 
+class GoogleLoginSerializer(serializers.Serializer):
+    id_token = serializers.CharField(
+        required=False, allow_blank=False, max_length=4096, write_only=True
+    )
+    access_token = serializers.CharField(
+        required=False, allow_blank=False, max_length=4096, write_only=True
+    )
+
+    def validate(self, data):
+        if bool(data.get("id_token")) == bool(data.get("access_token")):
+            raise serializers.ValidationError(
+                "Provide exactly one of id_token or access_token."
+            )
+        return data
+
+
 class SendOTPSerializer(serializers.Serializer):
     email = serializers.EmailField()
 
@@ -91,4 +107,3 @@ class ChangePasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError({"new_password": list(err.messages)})
 
         return data
-

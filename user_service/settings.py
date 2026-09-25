@@ -2,8 +2,6 @@
 PROJECT LEVEL SETTINGS 
 """
 import os
-
-from django.conf.global_settings import AUTH_USER_MODEL
 from dotenv import load_dotenv
 load_dotenv()
 from datetime import  timedelta
@@ -34,11 +32,23 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # user endpoints configurations
     'user',
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
     'User_Profile',
+    'rest_framework.authtoken',
+    #Allauth configurations for login/register with google and other services
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+
+    'dj_rest_auth',
+    # Django Sites framework
+    'django.contrib.sites',
 ]
 
 MIDDLEWARE = [
@@ -50,8 +60,15 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+
+SITE_ID = 1
 ROOT_URLCONF = 'user_service.urls'
 
 TEMPLATES = [
@@ -162,3 +179,18 @@ SIMPLE_JWT = {
 }
 
 
+REST_USE_JWT = True
+JWT_AUTH_COOKIE = None
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': os.getenv('GOOGLE_CLIENT_ID'),
+            'secret': os.getenv('GOOGLE_CLIENT_SECRET'),
+            'key': ''
+        },
+        'SCOPE': ['profile', 'email'],
+    }
+}
+
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
